@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  api:
+    container_name: go-app
+    image: golang:1.23-alpine
+    build: .
+    environment:
+      DATABASE_URL: "host=db user=postgres password=postgres dbname=postgres sslmode=disable"
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    command: air cmd/main.go -b 0.0.0.0
+    depends_on:
+      - db
+
+  db:
+    container_name: go-db
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
